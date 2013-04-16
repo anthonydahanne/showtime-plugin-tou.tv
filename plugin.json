@@ -1,0 +1,14 @@
+{
+  "type": "javascript",
+  "id": "tou.tv",
+  "file": "tou.tv.js",
+  "category": "video",
+  "showtimeVersion": "4.3.167",
+  "version": "1.0",
+  "author": "Anthony Dahanne (http://blog.dahanne.net)",
+  "title": "Tou.tv",
+  "icon": "toutv.png",
+  "synopsis": "Showtime plugin to watch RadioCanada's Tou.tv shows",
+  "description":"Tou.tv Showtime plugin is the integration of the website tou.tv videos into Showtime; might be available only from Canada",
+  "homepage":"https://github.com/anthonydahanne/showtime-plugin-tou.tv"
+}
