@@ -4,11 +4,11 @@
   "file": "tou.tv.js",
   "category": "video",
   "showtimeVersion": "4.3.167",
-  "version": "1.0",
-  "author": "Anthony Dahanne (http://blog.dahanne.net)",
+  "version": "1.1",
+  "author": "Anthony Dahanne (@anthonydahanne)",
   "title": "Tou.tv",
   "icon": "toutv.png",
   "synopsis": "Showtime plugin to watch RadioCanada's Tou.tv shows",
-  "description":"Tou.tv Showtime plugin is the integration of the website tou.tv videos into Showtime; might be available only from Canada",
+  "description":"Tou.tv Showtime plugin is the integration of the website tou.tv into Showtime<br />Most of the content is in french, and only accessible from Canada (ip address restriction).<br />That said, some 'webseries' such as Dakodak or J'adopte un pays, and some other documentaries such as Villages en France can be played from any country (I would say 10% of the shows can be played from outside Canada)",
   "homepage":"https://github.com/anthonydahanne/showtime-plugin-tou.tv"
 }

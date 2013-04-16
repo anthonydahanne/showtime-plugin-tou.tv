@@ -26,20 +26,15 @@
 
   var PLUGIN_PREFIX = "tou.tv:";
   var HLS_PREFIX = "hls:";
-//  var EMISSIONS_URL = "https://api.tou.tv/v1/toutvapiservice.svc/json/GetEmissions";
   var EMISSIONS_URL = "http:/api.tou.tv/v1/toutvapiservice.svc/json/GetPageRepertoire";
   var EPISODES_URL = "https://api.tou.tv/v1/toutvapiservice.svc/json/GetEpisodesForEmission?emissionid=";
   var JSON_OUTPUT = "&output=json";
   var EPISODE_VALIDATION_URL = "http://api.radio-canada.ca/validationMedia/v1/Validation.html?appCode=thePlatform&deviceType=iphone4&connectionType=wifi&idMedia=";
 
-
-
   // Register a service (will appear on home page)
   plugin.createService("Tou.tv", PLUGIN_PREFIX+"start", "other", true, plugin.path + "toutv.png");
-  plugin.createService("Tou.tv", PLUGIN_PREFIX+"emission", "other", false, plugin.path + "toutv.png");
-  plugin.createService("Tou.tv", PLUGIN_PREFIX+"episode", "other", false, plugin.path + "toutv.png");
 
-  // Add a responder to the registered URI
+  // Add a responder to the registered start URI
   plugin.addURI(PLUGIN_PREFIX+"start", function(page) {
     page.type = "directory";
     page.metadata.title = "Tou.tv shows";
@@ -59,6 +54,7 @@
     page.loading = false;
   });
 
+  // Add a responder to the registered emission URI
   plugin.addURI(PLUGIN_PREFIX+"emission:(.*):(.*)", function(page,emissionId,title) {
 
     page.type = "directory";
@@ -73,9 +69,17 @@
       var getEpisodeResponse = showtime.httpGet(EPISODE_VALIDATION_URL + episode.PID + JSON_OUTPUT);
       var episodeMetadata = showtime.JSONDecode(getEpisodeResponse);
 
+      var problemTitle = "";
+      var problemDescription = "";
+
+      if(episodeMetadata.url==null && episodeMetadata.errorCode==1) {
+        problemTitle = " - THIS EPISODE CAN'T BE PLAYED";
+        problemDescription = "THIS EPISODE CAN'T BE PLAYED FROM YOUR COUNTRY DUE TO IP ADDRESS RESTRICTIONS\u000A(Most probably this content is only available for Canadians)\u000A\u000A";
+      }
+
       var metadata = {
-        title: episode.SeasonAndEpisodeLong,
-        description: episode.Description,
+        title: episode.SeasonAndEpisodeLong + problemTitle,
+        description: problemDescription + episode.Description,
         year: parseInt(episode.Year),
         duration: episode.LengthString,
         icon: episode.ImagePlayerNormalC
@@ -83,7 +87,6 @@
 
       page.appendItem(HLS_PREFIX+episodeMetadata.url, "video", metadata);
     }
-
 
     page.loading = false;
   });
