@@ -1,4 +1,4 @@
-Tou.tv plugin for Showtime
+Tou.tv plugin for Showtime (Unofficial)
 ============================
 
 Tou.tv is Radio Canada's TV on demand (replay) website.
@@ -15,6 +15,11 @@ That said, some 'webseries' such as Dakodak or J'adopte un pays, and some other 
 Git: https://github.com/anthonydahanne/showtime-plugin-tou.tv
 
 ## Release notes
+
+1.2 - Episode metadata preloading
+-  New setting to enable/disable episode metadata preloading (useful if you're outside Canada, to know which content is playable, otherwise slows episodes listing down.)
+-  Episode metadata preloading before playing : so that the url is always up to date (it could be outdated before this change)
+
 
 1.1 - Minor UI fixes
 -  After installing, you would get 3 links, only the last one would work to launch the app

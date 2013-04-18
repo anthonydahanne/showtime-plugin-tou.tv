@@ -32,13 +32,32 @@
   var EPISODE_VALIDATION_URL = "http://api.radio-canada.ca/validationMedia/v1/Validation.html?appCode=thePlatform&deviceType=iphone4&connectionType=wifi&idMedia=";
 
   // Register a service (will appear on home page)
-  plugin.createService("Tou.tv", PLUGIN_PREFIX+"start", "other", true, plugin.path + "toutv.png");
+  var service = plugin.createService("Tou.tv", PLUGIN_PREFIX+"start", "tv", true, plugin.path + "toutv.png");
+
+  // register the settings
+  var settings = plugin.createSettings("Tou.tv",
+    plugin.path + "toutv.png",
+    "Showtime plugin to watch RadioCanada's Tou.tv shows (Unofficial)");
+
+  settings.createInfo("info",
+    plugin.path + "toutv.png",
+    "\n"+
+      "Tou.tv Showtime plugin is the integration of the website tou.tv into Showtime.\n" +
+      "Most of the content is in french, and only accessible from Canada (ip address restriction).\n"+
+      "That said, some 'webseries' such as Dakodak or J'adopte un pays, "+
+      "and some other documentaries such as Villages en France can be played from any country "+
+      "(I would say 10% of the shows can be played from outside Canada)\n\n"+
+      "Disable episodes metadata preloading if you are located in Canada; episodes list loading will be faster (if you are not located in Canada, let it enabled; episodes listing will be slower but at least you'll know whether you can play the episodes or not !\n");
+
+  settings.createBool("disableEpisodesMetadataPreloading", "Disable episodes metadata preloading", false, function(v) {
+    service.disableEpisodesMetadataPreloading = v;
+  });
+
 
   // Add a responder to the registered start URI
   plugin.addURI(PLUGIN_PREFIX+"start", function(page) {
     page.type = "directory";
     page.metadata.title = "Tou.tv shows";
-    page.metadata.logo = plugin.path + "toutv.png";
 
     showtime.trace("Getting emissions list : " + EMISSIONS_URL);
     var getEmissionsResponse = showtime.httpGet(EMISSIONS_URL);
@@ -47,7 +66,6 @@
     for each (var emission in emissions.d.Emissions) {
       page.appendItem(PLUGIN_PREFIX+"emission:"+emission.Id+":"+emission.Titre, "directory", {
         title: emission.Titre
-
       });
     }
 
@@ -56,7 +74,6 @@
 
   // Add a responder to the registered emission URI
   plugin.addURI(PLUGIN_PREFIX+"emission:(.*):(.*)", function(page,emissionId,title) {
-
     page.type = "directory";
     page.metadata.title = title;
 
@@ -65,16 +82,18 @@
 
     var episodes = showtime.JSONDecode(getEpisodesResponse);
     for each (var episode in episodes.d) {
-      showtime.trace("Getting episode metadata : " + EPISODE_VALIDATION_URL + episode.PID + JSON_OUTPUT);
-      var getEpisodeResponse = showtime.httpGet(EPISODE_VALIDATION_URL + episode.PID + JSON_OUTPUT);
-      var episodeMetadata = showtime.JSONDecode(getEpisodeResponse);
-
       var problemTitle = "";
       var problemDescription = "";
+      // we don't try to load all the episodes' metadata if the user disabled the setting
+      if(service.disableEpisodesMetadataPreloading == 0) {
+        showtime.trace("Getting episode metadata to check availability : " + EPISODE_VALIDATION_URL + episode.PID + JSON_OUTPUT);
+        var getEpisodeResponse = showtime.httpGet(EPISODE_VALIDATION_URL + episode.PID + JSON_OUTPUT);
+        var episodeMetadata = showtime.JSONDecode(getEpisodeResponse);
 
-      if(episodeMetadata.url==null && episodeMetadata.errorCode==1) {
-        problemTitle = " - THIS EPISODE CAN'T BE PLAYED";
-        problemDescription = "THIS EPISODE CAN'T BE PLAYED FROM YOUR COUNTRY DUE TO IP ADDRESS RESTRICTIONS\u000A(Most probably this content is only available for Canadians)\u000A\u000A";
+        if(episodeMetadata.url==null && episodeMetadata.errorCode==1) {
+          problemTitle = " - THIS EPISODE CAN'T BE PLAYED";
+          problemDescription = "THIS EPISODE CAN'T BE PLAYED FROM YOUR COUNTRY DUE TO IP ADDRESS RESTRICTIONS\u000A(Most probably this content is only available for Canadians)\u000A\u000A";
+        }
       }
 
       var metadata = {
@@ -84,10 +103,22 @@
         duration: episode.LengthString,
         icon: episode.ImagePlayerNormalC
       };
-
-      page.appendItem(HLS_PREFIX+episodeMetadata.url, "video", metadata);
+      page.appendItem(PLUGIN_PREFIX + "video:" + episode.PID, "video", metadata);
     }
+    page.loading = false;
+  });
 
+  plugin.addURI(PLUGIN_PREFIX+"video:(.*)", function(page, pid) {
+    // we need to re poll the episode metadata since the pid could be outdated (if the user waited too long)
+    showtime.trace("Getting episode metadata before playing : " + EPISODE_VALIDATION_URL + pid + JSON_OUTPUT);
+    var getEpisodeResponse = showtime.httpGet(EPISODE_VALIDATION_URL + pid + JSON_OUTPUT);
+    var episodeMetadata = showtime.JSONDecode(getEpisodeResponse);
+    if(episodeMetadata.url == null ) {
+      page.error("Because you are not located in Canada, you can't play this episode; see settings");
+    } else {
+      page.type = 'video';
+      page.source = HLS_PREFIX + episodeMetadata.url;
+    }
     page.loading = false;
   });
 
