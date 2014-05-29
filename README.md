@@ -9,7 +9,7 @@ Tou.tv Showtime plugin allows the integration of tou.tv videos into Showtime.
 
 Most of the content is in french, and only accessible from Canada (ip address restriction).
 
-That said, some 'webseries' such as Dakodak or J'adopte un pays, and some other documentaries such as Villages en France can be played from any country (I would say 10% of the shows can be played from outside Canada)
+That said, some 'webseries' such as Dakodak or J'adopte un pays, and some other documentaries such as Villages en France can be played from any country (I would say 15% of the shows can be played from outside Canada) - choose "Accessible Hors Canada" if you live outside Canada.
 
 
 Git: https://github.com/anthonydahanne/showtime-plugin-tou.tv
@@ -33,6 +33,7 @@ Git: https://github.com/anthonydahanne/showtime-plugin-tou.tv
 
 ![Screenshot](https://raw.github.com/anthonydahanne/showtime-plugin-tou.tv/master/screenshots/tou.tv-homescreen.png "home")
 ![Screenshot](https://raw.github.com/anthonydahanne/showtime-plugin-tou.tv/master/screenshots/tou.tv-list-of-shows.png "list of shows")
+![Screenshot](https://raw.github.com/anthonydahanne/showtime-plugin-tou.tv/master/screenshots/tou.tv-list-of-categories.png "list of categories")
 ![Screenshot](https://raw.github.com/anthonydahanne/showtime-plugin-tou.tv/master/screenshots/tou.tv-list-of-episodes.png "list of episodes")
 
 ## License notes
