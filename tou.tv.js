@@ -1,7 +1,7 @@
 /**
  * Showtime plugin to watch RadioCanada's tou.tv shows
  *
- * Copyright (C) 2013-2014 Anthony Dahanne
+ * Copyright (C) 2013-2015 Anthony Dahanne
  *
  *     This file is part of Tou.tv Showtime plugin.
  *
@@ -49,39 +49,39 @@
     page.appendItem(PLUGIN_PREFIX+"start", "directory", {
         title: "GENRES"
     });
-    for each (var genre in emissions.d.Genres) {
+    emissions.d.Genres.forEach(function (genre) {
       var numberOfShowsPerGenre = 0;
       var listOfShowsPerGenre = "";
-      for each (var emission in emissions.d.Emissions) {
-        if(emission.Genre == genre.Title) {
-          numberOfShowsPerGenre ++;
+      emissions.d.Emissions.forEach(function (emission) {
+        if (emission.Genre == genre.Title) {
+          numberOfShowsPerGenre++;
           listOfShowsPerGenre += emission.Titre + " - ";
         }
-      }
-      page.appendItem(PLUGIN_PREFIX+"genre:"+genre.Id+":"+genre.Title, "video", {
-        title: genre.Title + " (" + numberOfShowsPerGenre +  ")",
+      });
+      page.appendItem(PLUGIN_PREFIX + "genre:" + genre.Id + ":" + genre.Title, "video", {
+        title: genre.Title + " (" + numberOfShowsPerGenre + ")",
         description: listOfShowsPerGenre
       });
-    }
+    });
 
     page.appendItem(PLUGIN_PREFIX+"start", "directory", {
         title: "DUREES"
     });
-    for each (var duree in CATEGORIEDUREES) {
+    CATEGORIEDUREES.forEach(function (duree) {
       var numberOfShowsPerDuree = 0;
       var listOfShowsPerDuree = "";
-      for each (var emission in emissions.d.Emissions) {
-          if(emission.CategorieDuree == duree) {
-            numberOfShowsPerDuree ++;
-            listOfShowsPerDuree += emission.Titre + " - ";
-          }
+      emissions.d.Emissions.forEach(function (emission) {
+        if (emission.CategorieDuree == duree) {
+          numberOfShowsPerDuree++;
+          listOfShowsPerDuree += emission.Titre + " - ";
         }
+      });
 
       page.appendItem(PLUGIN_PREFIX+"duree:"+duree, "video", {
         title: duree + " (" + numberOfShowsPerDuree +  ")",
         description: listOfShowsPerDuree
       });
-    }
+    });
 
     page.appendItem(PLUGIN_PREFIX+"start", "directory", {
         title: "AUTRES"
@@ -89,12 +89,12 @@
 
     var numberOfShowsNotGeoTagged = 0;
     var listOfShowsNotGeoTagged = "";
-    for each (var emission in emissions.d.Emissions) {
-        if(emission.IsGeolocalise == false) {
-          numberOfShowsNotGeoTagged ++;
-          listOfShowsNotGeoTagged += emission.Titre + " - ";
-        }
+    emissions.d.Emissions.forEach(function (emission) {
+      if (emission.IsGeolocalise == false) {
+        numberOfShowsNotGeoTagged++;
+        listOfShowsNotGeoTagged += emission.Titre + " - ";
       }
+    });
     page.appendItem(PLUGIN_PREFIX+"outsidecanada", "video", {
         title: "Accessible Hors Canada" + " (" + numberOfShowsNotGeoTagged +  ")",
         description: listOfShowsNotGeoTagged
@@ -135,7 +135,7 @@
     showtime.trace("Getting emissions list : " + EMISSIONS_URL);
     var getEmissionsResponse = showtime.httpGet(EMISSIONS_URL);
     var emissions = showtime.JSONDecode(getEmissionsResponse);
-    for each (var emission in emissions.d.Emissions) {
+    emissions.d.Emissions.forEach(function (emission) {
       if(matchesFunction(emission, parameter)) {
         if(emission.NombreEpisodes == 1) {
           page.appendItem(PLUGIN_PREFIX+"emission:"+emission.Id+":"+emission.Titre, "video", {
@@ -148,7 +148,7 @@
           });
         }
       }
-    }
+    });
     page.loading = false;
   }
 
@@ -202,15 +202,16 @@
     var getEpisodesResponse = showtime.httpGet(EPISODES_URL + emissionId);
 
     var episodes = showtime.JSONDecode(getEpisodesResponse);
-    for each (var episode in episodes.d) {
+    episodes.d.forEach(function (episode) {
+      showtime.trace("hello " + episode.FullTitle );
       var displayedTitle = "";
       if (episodes.d.length == 1) {
         displayedTitle = title;
       } else {
         var fullTitle = episode.FullTitle;
         var indexOfColumn = fullTitle.indexOf(":");
-        if(indexOfColumn != 0) {
-          fullTitle =  fullTitle.substring(indexOfColumn + 1);
+        if (indexOfColumn != 0) {
+          fullTitle = fullTitle.substring(indexOfColumn + 1);
         }
         displayedTitle = episode.SeasonAndEpisodeLong + " -" + fullTitle;
       }
@@ -223,7 +224,7 @@
         icon: episode.ImagePlayerNormalC
       };
       page.appendItem(PLUGIN_PREFIX + "video:" + episode.PID, "video", metadata);
-    }
+    });
     page.loading = false;
   });
 

@@ -16,6 +16,8 @@ Git: https://github.com/anthonydahanne/showtime-plugin-tou.tv
 
 ## Release notes
 
+1.4 - Updated for Movian 4.10 (compatibility with Duktape ecmascript engine)
+
 1.2 - Episode metadata preloading
 -  New setting to enable/disable episode metadata preloading (useful if you're outside Canada, to know which content is playable, otherwise slows episodes listing down.)
 -  Episode metadata preloading before playing : so that the url is always up to date (it could be outdated before this change)
